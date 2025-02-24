@@ -1,1 +1,77 @@
-fuck you all niggers
+-- Variables necesarias
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local Debris = game:GetService("Debris")
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local rootPart = character:WaitForChild("HumanoidRootPart")
+
+-- Distancia y velocidad del dash
+local dashDistance = 20  -- Ajusta la distancia del dash
+local dashDuration = 0.25  -- Ajusta la duración del dash
+
+-- Función del "Dragon Sage Dash"
+local function DragonSageDash()
+    local startPos = rootPart.Position
+    local dashDirection = rootPart.CFrame.LookVector * dashDistance
+    local endPos = startPos + dashDirection
+    local magnitude = (startPos - endPos).magnitude
+
+    -- Primer efecto de esfera
+    local part1 = Instance.new("Part", workspace)
+    part1.Anchored = true
+    part1.CanCollide = false
+    part1.Material = Enum.Material.Neon
+    part1.BrickColor = BrickColor.new("Cyan")
+    part1.Size = Vector3.new(1, 1, 1)
+    part1.CFrame = CFrame.new(startPos)
+    
+    local mesh1 = Instance.new("SpecialMesh", part1)
+    mesh1.MeshType = Enum.MeshType.Sphere
+    mesh1.Scale = Vector3.new(5, 5, 5)
+    
+    -- Animación de transparencia
+    local tween1 = TweenService:Create(part1, TweenInfo.new(dashDuration, Enum.EasingStyle.Circular), {Transparency = 0.5})
+    tween1:Play()
+    
+    Debris:AddItem(part1, dashDuration)
+
+    -- Segundo efecto de línea (ajustado como has indicado)
+    local part2 = Instance.new("Part", workspace)
+    part2.Anchored = true
+    part2.CanCollide = false
+    part2.Material = Enum.Material.Neon
+    part2.BrickColor = BrickColor.new("Cyan")
+    part2.Size = Vector3.new(1, 1, 1) -- Tamaño inicial
+
+    -- Ajustar el CFrame para crear la línea entre la posición inicial y final
+    part2.CFrame = CFrame.new(startPos, startPos + (startPos - endPos).unit) * CFrame.new(0, 0, magnitude / 2)
+
+    -- Crear el mesh para representar la línea
+    local mesh2 = Instance.new("SpecialMesh", part2)
+    mesh2.MeshType = Enum.MeshType.Brick
+    mesh2.Scale = Vector3.new(1, 1, magnitude)
+
+    -- Animación de transparencia
+    local tween2 = TweenService:Create(part2, TweenInfo.new(dashDuration, Enum.EasingStyle.Circular), {Transparency = 0.5})
+    tween2:Play()
+
+    Debris:AddItem(part2, dashDuration)
+
+    -- Mover al jugador hacia la nueva posición
+    rootPart.CFrame = CFrame.new(endPos)
+
+    -- Sonido
+    local sound = Instance.new("Sound", rootPart)
+    sound.SoundId = "rbxassetid://5804822209"  -- Reemplaza por el ID del sonido
+    sound:Play()
+    sound.Volume = 34
+    Debris:AddItem(sound, 1)
+end
+
+-- Activar al presionar "K"
+UserInputService.InputBegan:Connect(function(input)
+    if input.KeyCode == Enum.KeyCode.C then
+        DragonSageDash()
+    end
+end)
